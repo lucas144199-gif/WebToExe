@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebToExe</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f7fb; color: #1f2937; margin: 0; padding: 0; }
+    .container { max-width: 760px; margin: 40px auto; padding: 24px; background: white; border-radius: 16px; box-shadow: 0 16px 40px rgba(15,23,42,0.08); }
+    h1 { margin-top: 0; }
+    label { display: block; margin: 16px 0 8px; font-weight: 600; }
+    input[type=text], textarea, select { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font-size: 15px; }
+    textarea { min-height: 180px; resize: vertical; }
+    .button { margin-top: 24px; display: inline-flex; align-items: center; justify-content: center; padding: 14px 22px; border: none; border-radius: 10px; background: #2563eb; color: white; font-size: 16px; cursor: pointer; }
+    .button:hover { background: #1d4ed8; }
+    .help { font-size: 14px; color: #4b5563; margin-top: 4px; }
+    .row { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+    .full { grid-column: 1 / -1; }
+    .hidden { display: none; }
+    .checkbox-label { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-weight: 600; }
+    .checkbox-label input { width: auto; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WebToExe</h1>
+    <p>Create a downloadable webview wrapper from a URL or HTML content.</p>
+    <form action="/generate" method="post" enctype="multipart/form-data">
+      <label for="app_name">App name</label>
+      <input id="app_name" name="app_name" type="text" placeholder="My Web App" value="WebToExeApp" required>
+
+      <label for="package_name">Package name</label>
+      <input id="package_name" name="package_name" type="text" placeholder="webtoexe-app" value="webtoexe-app">
+      <div class="help">Used for the generated folder and Electron package name.</div>
+
+      <label for="version">App version</label>
+      <input id="version" name="version" type="text" placeholder="1.0.0" value="1.0.0">
+      <div class="help">Version used in generated package metadata.</div>
+
+      <label for="main_page">Main page</label>
+      <input id="main_page" name="main_page" type="text" placeholder="index.html" value="index.html">
+      <div class="help">Enter the main HTML file name in the uploaded ZIP.</div>
+
+      <label for="icon_file">Upload icon</label>
+      <input id="icon_file" name="icon_file" type="file" accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/svg+xml">
+      <div class="help">Upload an icon file to include in the generated package.</div>
+
+      <label class="checkbox-label">
+        <input id="include_extra_pages" name="include_extra_pages" type="checkbox" checked>
+        Include extra pages (About, Help, Contact)
+      </label>
+
+      <label for="wrapper_type">Wrapper type</label>
+      <select id="wrapper_type" name="wrapper_type">
+        <option value="pywebview">Python + pywebview</option>
+        <option value="electron">Electron</option>
+      </select>
+      <div class="help">Python wrapper creates a simple app bundle. Electron option creates a ready-to-run Electron project skeleton.</div>
+
+      <label for="source_type">Source</label>
+      <select id="source_type" name="source_type" onchange="toggleSource()">
+        <option value="url">URL</option>
+        <option value="html">HTML</option>
+        <option value="zip">HTML/CSS/JS ZIP</option>
+      </select>
+
+      <div id="urlSource" class="full source-block">
+        <label for="source_url">Target URL</label>
+        <input id="source_url" name="source_url" type="text" placeholder="https://example.com">
+      </div>
+
+      <div id="htmlSource" class="full source-block hidden">
+        <label for="source_html">Raw HTML</label>
+        <textarea id="source_html" name="source_html" placeholder="Paste your HTML here"></textarea>
+      </div>
+
+      <div id="zipSource" class="full source-block hidden">
+        <label for="source_zip">Upload HTML/CSS/JS ZIP</label>
+        <input id="source_zip" name="source_zip" type="file" accept=".zip">
+        <div class="help">Upload a ZIP archive containing your static site files and choose its main page.</div>
+      </div>
+
+      <button class="button" type="submit">Generate download</button>
+    </form>
+  </div>
+  <script>
+    function toggleSource() {
+      const sourceType = document.getElementById('source_type').value;
+      document.getElementById('urlSource').classList.toggle('hidden', sourceType !== 'url');
+      document.getElementById('htmlSource').classList.toggle('hidden', sourceType !== 'html');
+    }
+  </script>
+</body>
+</html>
